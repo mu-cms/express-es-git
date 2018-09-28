@@ -1,21 +1,26 @@
-const { NEXT } = require('./const');
+const { NEXT, ROUTE } = require('./const');
 
 module.exports = repo => ({
-  loadPath: async (req, res) => {
-    const { path } = req.params;
-    let { tree } = req.params;
+  refToTree: async(req) => {
+    const { tree } = req.params;
 
-    let ref = await repo.getRef(`refs/remotes/origin/${tree}`);
+    const ref = await repo.getRef(`refs/heads/${tree}`);
     if (ref) {
-      ({ body: { tree } } = await repo.loadObject(ref));
+      ({ body: { tree: req.params.tree } } = await repo.loadObject(ref));
     }
+
+    return NEXT;
+  },
+
+  loadPath: async (req, res) => {
+    const { path, tree } = req.params;
 
     const result = await repo.loadTextByPath(tree, path);
     if (result) {
       res.send(result);
     }
 
-    return NEXT;
+    return result ? NEXT : ROUTE;
   },
 
   loadBlob: async (req, res) => {
@@ -26,6 +31,6 @@ module.exports = repo => ({
       res.send(result);
     }
 
-    return NEXT;
+    return result ? NEXT : ROUTE;
   }
 });

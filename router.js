@@ -7,7 +7,7 @@ module.exports = repo => {
 
   router.param('blob', param.sha1);
   router.get('/:blob', controller.loadBlob);
-  router.get('/:tree/:path([^$]+)', controller.loadPath);
+  router.get('/:tree/:path([^$]+)', controller.refToTree, controller.loadPath);
 
   return router;
 }
