@@ -19,6 +19,8 @@ const process = async (req, res, result, cache_control, etag, options) => {
   return !!result;
 }
 
+const hasLength = x => x.length > 0;
+
 module.exports = (repo, options = {}) => ({
   refToTree: async (req) => {
     const { tree } = req.params;
@@ -34,7 +36,29 @@ module.exports = (repo, options = {}) => ({
     const { path, tree } = req.params;
     const { cache_long = CACHE_LONG, cache_short = CACHE_SHORT } = options;
 
-    await process(req, res, await repo.loadTextByPath(tree, path), req.ref ? cache_short : cache_long, tree, options) ? NEXT : ROUTE;
+    let hash = tree;
+
+    const parts = path.split('/').filter(hasLength);
+    for (const part of parts) {
+      const object = await repo.loadObject(hash);
+      const { type } = object;
+      if (!object) {
+        throw new Error(`Missing object: ${hash}`);
+      }
+      else if (type === 'blob') {
+        return undefined;
+      }
+      else if (type !== 'tree') {
+        throw new Error(`Wrong object: ${hash}. Expected tree, got ${type}`);
+      }
+      const entry = object.body[part];
+      if (!entry) {
+        return undefined;
+      }
+      hash = entry.hash;
+    }
+
+    await process(req, res, await repo.loadText(hash), req.ref ? cache_short : cache_long, hash, options) ? NEXT : ROUTE;
   },
 
   loadBlob: async (req, res) => {
