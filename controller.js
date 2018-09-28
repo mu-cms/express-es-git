@@ -1,4 +1,3 @@
-const mime_types = require('mime-types');
 const { NEXT, ROUTE, MIME, CACHE_SHORT, CACHE_LONG } = require('./const');
 
 const process = async (req, res, result, cache_control, etag, options) => {
@@ -12,7 +11,7 @@ const process = async (req, res, result, cache_control, etag, options) => {
       });
     }
     if (mime) {
-      res.type(mime_types.lookup(req.path) || mime);
+      res.type(mime(req.path));
     }
     res.send(result);
   }
