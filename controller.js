@@ -1,7 +1,7 @@
 const { NEXT, ROUTE, MIME, CACHE_SHORT, CACHE_LONG } = require('./const');
 
 const process = async (req, res, result, cache_control, etag, options) => {
-  const { cache, mime = MIME } = options;
+  const { cache = true, mime = MIME } = options;
 
   if (result) {
     if (cache) {
@@ -19,7 +19,7 @@ const process = async (req, res, result, cache_control, etag, options) => {
   return !!result;
 }
 
-module.exports = (repo, options) => ({
+module.exports = (repo, options = {}) => ({
   refToTree: async (req) => {
     const { tree } = req.params;
 
