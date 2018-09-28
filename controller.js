@@ -61,6 +61,6 @@ module.exports = (repo, options = {}) => ({
     const { hash } = req.params;
     const { cache_long = CACHE_LONG, mime = MIME } = options;
 
-    return process(req, res, await repo.loadText(hash), cache_long, hash, { ...options, mime: (path, type = 'application/octet-stream') => mime(path, type) }) ? NEXT : ROUTE;
+    return process(req, res, await repo.loadText(hash), cache_long, hash, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
   }
 });
