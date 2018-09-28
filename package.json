@@ -1,0 +1,24 @@
+{
+  "name": "mu-cms-middleware-git",
+  "version": "0.0.0",
+  "description": "Micro CMS middleware for git",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mu-cms/mu-cms-middleware-git.git"
+  },
+  "author": "Mikael Karon <mikael@karon.se>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mu-cms/mu-cms-middleware-git/issues"
+  },
+  "homepage": "https://github.com/mu-cms/mu-cms-middleware-git#readme",
+  "dependencies": {
+    "express": "^4",
+    "express-promise-router": "^3.0.3",
+    "validator": "^10.8.0"
+  }
+}
