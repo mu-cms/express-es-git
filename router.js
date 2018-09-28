@@ -5,8 +5,8 @@ module.exports = (repo, options) => {
   const router = new PromiseRouter();
   const controller = require('./controller')(repo, options);
 
-  router.param('blob', param.sha1);
-  router.get('/:blob', controller.loadBlob);
+  router.param('hash', param.sha1);
+  router.get('/:hash', controller.loadText);
   router.get('/:tree/:path([^$]+)', controller.refToTree, controller.loadPath);
 
   return router;
