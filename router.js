@@ -1,7 +1,7 @@
 const PromiseRouter = require('express-promise-router');
 const param = require('./param');
 
-module.exports = (repo, options = { cache: true, mime: true }) => {
+module.exports = (repo, options = { cache: true }) => {
   const router = new PromiseRouter();
   const controller = require('./controller')(repo, options);
 
