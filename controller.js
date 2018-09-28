@@ -1,7 +1,7 @@
 const mime = require('mime-types');
-const { NEXT, ROUTE } = require('./const');
+const { NEXT, ROUTE, TYPE, CACHE_SHORT, CACHE_LONG } = require('./const');
 
-module.exports = repo => ({
+module.exports = (repo, options) => ({
   refToTree: async(req) => {
     const { tree } = req.params;
 
@@ -17,10 +17,15 @@ module.exports = repo => ({
 
     const result = await repo.loadTextByPath(tree, path);
     if (result) {
-      res.set({
-        'Cache-Control':  req.ref ? 'max-age=100, s-maxage=300, stale-while-revalidate=500, stale-if-error=1000' : 'only-if-cached',
-        'ETag': tree
-      });
+      if (options.cache) {
+        res.set({
+          'Cache-Control':  req.ref ? options.cache_short || CACHE_SHORT : options.cache_long || CACHE_LONG,
+          'ETag': tree
+        });
+      }
+      if (options.mime) {
+        res.type(mime.lookup(req.path) || TYPE);
+      }
       res.send(result);
     }
 
@@ -32,19 +37,18 @@ module.exports = repo => ({
 
     const result = await repo.loadText(blob);
     if (result) {
-      res.set({
-        'Cache-Control': 'only-if-cached',
-        'ETag': blob
-      });
+      if (options.cache) {
+        res.set({
+          'Cache-Control': options.cache_long || CACHE_LONG,
+          'ETag': blob
+        });
+      }
+      if (options.mime) {
+        res.type(mime.lookup(req.path) || TYPE);
+      }
       res.send(result);
     }
 
     return result ? NEXT : ROUTE;
-  },
-
-  mimeType: async (req, res) => {
-    res.type(mime.lookup(req.path) || 'text/plain');
-
-    return NEXT;
   }
 });

@@ -1,13 +1,13 @@
 const PromiseRouter = require('express-promise-router');
 const param = require('./param');
 
-module.exports = repo => {
+module.exports = (repo, options = { cache: true, mime: true }) => {
   const router = new PromiseRouter();
-  const controller = require('./controller')(repo);
+  const controller = require('./controller')(repo, options);
 
   router.param('blob', param.sha1);
-  router.get('/:blob', controller.mimeType, controller.loadBlob);
-  router.get('/:tree/:path([^$]+)', controller.mimeType, controller.refToTree, controller.loadPath);
+  router.get('/:blob', controller.loadBlob);
+  router.get('/:tree/:path([^$]+)', controller.refToTree, controller.loadPath);
 
   return router;
 }
