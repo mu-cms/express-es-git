@@ -6,7 +6,7 @@ module.exports = (repo, options) => {
   const controller = require('./controller')(repo, options);
 
   router.param('hash', param.sha1);
-  router.get('/:hash', controller.loadText);
+  router.get('/:hash\.:ext?', controller.loadText);
   router.get('/:tree/:path([^$]+)', controller.refToTree, controller.loadPath);
 
   return router;
