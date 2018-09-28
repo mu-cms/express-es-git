@@ -41,19 +41,15 @@ module.exports = (repo, options = {}) => ({
     const parts = path.split('/').filter(hasLength);
     for (const part of parts) {
       const object = await repo.loadObject(hash);
-      const { type } = object;
       if (!object) {
         throw new Error(`Missing object: ${hash}`);
       }
-      else if (type === 'blob') {
-        return undefined;
-      }
-      else if (type !== 'tree') {
-        throw new Error(`Wrong object: ${hash}. Expected tree, got ${type}`);
+      else if (object.type !== 'tree') {
+        throw new Error(`Wrong object: ${hash}. Expected tree, got ${object.type}`);
       }
       const entry = object.body[part];
       if (!entry) {
-        return undefined;
+        return ROUTE;
       }
       hash = entry.hash;
     }
