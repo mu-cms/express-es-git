@@ -1,14 +1,11 @@
-const { NEXT, ROUTE, MIME, CACHE_SHORT, CACHE_LONG } = require('./const');
+const { NEXT, ROUTE, MIME, CACHE, CACHE_SHORT, CACHE_LONG } = require('./const');
 
 const process = (req, res, result, cache_control, etag, options) => {
-  const { cache = true, mime = MIME } = options;
+  const { cache = CACHE, mime = MIME } = options;
 
   if (result) {
     if (cache) {
-      res.set({
-        'Cache-Control': cache_control,
-        'ETag': etag
-      });
+      res.set(cache(cache_control, etag));
     }
     if (mime) {
       res.type(mime(req.path));
