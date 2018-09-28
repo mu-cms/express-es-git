@@ -1,3 +1,4 @@
+const mime = require('mime-types');
 const { NEXT, ROUTE } = require('./const');
 
 module.exports = repo => ({
@@ -32,5 +33,11 @@ module.exports = repo => ({
     }
 
     return result ? NEXT : ROUTE;
+  },
+
+  mimeType: async (req, res) => {
+    res.type(mime.lookup(req.path) || 'text/plain');
+
+    return NEXT;
   }
 });

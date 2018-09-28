@@ -6,8 +6,8 @@ module.exports = repo => {
   const controller = require('./controller')(repo);
 
   router.param('blob', param.sha1);
-  router.get('/:blob', controller.loadBlob);
-  router.get('/:tree/:path([^$]+)', controller.refToTree, controller.loadPath);
+  router.get('/:blob', controller.mimeType, controller.loadBlob);
+  router.get('/:tree/:path([^$]+)', controller.mimeType, controller.refToTree, controller.loadPath);
 
   return router;
 }
