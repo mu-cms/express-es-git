@@ -33,10 +33,9 @@ module.exports = (repo, options = {}) => ({
   },
 
   loadPath: async (req, res) => {
-    const { path, tree } = req.params;
+    const { path } = req.params;
+    let { tree: hash } = req.params;
     const { cache_long = CACHE_LONG, cache_short = CACHE_SHORT } = options;
-
-    let hash = tree;
 
     const parts = path.split('/').filter(hasLength);
     for (const part of parts) {
