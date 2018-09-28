@@ -5,9 +5,8 @@ module.exports = repo => ({
   refToTree: async(req) => {
     const { tree } = req.params;
 
-    const ref = await repo.getRef(`refs/heads/${tree}`);
-    if (ref) {
-      ({ body: { tree: req.params.tree } } = await repo.loadObject(ref));
+    if (req.ref = await repo.getRef(`refs/heads/${tree}`)) {
+      ({ body: { tree: req.params.tree } } = await repo.loadObject(req.ref));
     }
 
     return NEXT;
@@ -18,6 +17,10 @@ module.exports = repo => ({
 
     const result = await repo.loadTextByPath(tree, path);
     if (result) {
+      res.set({
+        'Cache-Control':  req.ref ? 'max-age=100, s-maxage=300, stale-while-revalidate=500, stale-if-error=1000' : 'only-if-cached',
+        'ETag': tree
+      });
       res.send(result);
     }
 
@@ -29,6 +32,10 @@ module.exports = repo => ({
 
     const result = await repo.loadText(blob);
     if (result) {
+      res.set({
+        'Cache-Control': 'only-if-cached',
+        'ETag': blob
+      });
       res.send(result);
     }
 
