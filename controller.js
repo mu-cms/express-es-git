@@ -14,9 +14,8 @@ module.exports = repo => ({
     if (result) {
       res.send(result);
     }
-    else {
-      return NEXT;
-    }
+
+    return NEXT;
   },
 
   loadBlob: async (req, res) => {
@@ -26,8 +25,7 @@ module.exports = repo => ({
     if (result) {
       res.send(result);
     }
-    else {
-      return NEXT;
-    }
+
+    return NEXT;
   }
 });
