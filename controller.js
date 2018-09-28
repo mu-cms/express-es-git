@@ -1,6 +1,6 @@
 const { NEXT, ROUTE, MIME, CACHE_SHORT, CACHE_LONG } = require('./const');
 
-const process = async (req, res, result, cache_control, etag, options) => {
+const process = (req, res, result, cache_control, etag, options) => {
   const { cache = true, mime = MIME } = options;
 
   if (result) {
@@ -54,13 +54,13 @@ module.exports = (repo, options = {}) => ({
       hash = entry.hash;
     }
 
-    await process(req, res, await repo.loadText(hash), req.ref ? cache_short : cache_long, hash, options) ? NEXT : ROUTE;
+    return process(req, res, await repo.loadText(hash), req.ref ? cache_short : cache_long, hash, options) ? NEXT : ROUTE;
   },
 
   loadText: async (req, res) => {
     const { hash } = req.params;
     const { cache_long = CACHE_LONG } = options;
 
-    await process(req, res, await repo.loadText(hash), cache_long, hash, { ...options, mime: () => 'application/octet-stream' }) ? NEXT : ROUTE;
+    return process(req, res, await repo.loadText(hash), cache_long, hash, { ...options, mime: () => 'application/octet-stream' }) ? NEXT : ROUTE;
   }
 });
