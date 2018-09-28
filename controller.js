@@ -42,6 +42,6 @@ module.exports = (repo, options) => ({
     const { blob } = req.params;
     const { cache_long = CACHE_LONG } = options;
 
-    await process(req, res, await repo.loadText(blob), cache_long, tree, options) ? NEXT : ROUTE;
+    await process(req, res, await repo.loadText(blob), cache_long, blob, options) ? NEXT : ROUTE;
   }
 });
