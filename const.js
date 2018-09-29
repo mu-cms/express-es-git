@@ -1,6 +1,6 @@
 const mime = require('mime-types');
 const cache = {
-  'refs/tags': 'max-age=1000, s-maxage=3000, stale-while-revalidate=5000, stale-if-error=10000',
+  'refs/tags': 'max-age=1000, s-maxage=3000, stale-while-revalidate=5000, stale-if-error=1000',
   'refs/heads': 'max-age=100, s-maxage=300, stale-while-revalidate=500, stale-if-error=1000'
 };
 
