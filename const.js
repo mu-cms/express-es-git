@@ -2,7 +2,7 @@ const mime = require('mime-types');
 
 exports.NEXT = 'next';
 exports.ROUTE = 'route';
-exports.REFS = [
+exports.SPECS = [
   tag => ({
     ref: `refs/tags/${tag}`,
     cache_control: 'max-age=1000, s-maxage=3000, stale-while-revalidate=5000, stale-if-error=1000'

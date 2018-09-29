@@ -1,28 +1,11 @@
-const { NEXT, ROUTE, HEAD, REFS } = require('./const');
+const { NEXT, ROUTE, HEAD } = require('./const');
 
 const hasLength = x => x.length > 0;
 
 module.exports = (repo, options = {}) => ({
-  refToTree: async (req) => {
-    const { tree } = req.params;
-    const { refs = REFS } = options;
-
-    for (const ref of refs) {
-      const git = ref(tree);
-      const hash = await repo.getRef(git.ref);
-      if (hash) {
-        ({ body: { tree: req.params.tree } } = await repo.loadObject(hash));
-        req.git = { ...git, commit: hash };
-        break;
-      }
-    }
-
-    return NEXT;
-  },
-
   loadPath: async (req) => {
     const { path } = req.params;
-    let { tree, tree: hash } = req.params;
+    let { ref: tree, ref: hash } = req.params;
 
     const parts = path.split('/').filter(hasLength);
     for (const part of parts) {
@@ -40,15 +23,15 @@ module.exports = (repo, options = {}) => ({
       hash = entry.hash;
     }
 
-    req.git = { ...req.git, object: hash, body: await repo.loadText(hash), tree };
+    req.git = { ...req.git, body: await repo.loadText(hash), object: hash, tree };
 
     return NEXT;
   },
 
   loadText: async (req) => {
-    const { hash } = req.params;
+    const { ref: object } = req.params;
 
-    req.git = { ...req.git, object: hash, body: await repo.loadText(hash) };
+    req.git = { ...req.git, body: await repo.loadText(object), object };
 
     return NEXT;
   },

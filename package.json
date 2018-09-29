@@ -19,7 +19,6 @@
   "dependencies": {
     "express": "^4",
     "express-promise-router": "^3.0.3",
-    "mime-types": "^2.1.20",
-    "validator": "^10.8.0"
+    "mime-types": "^2.1.20"
   }
 }

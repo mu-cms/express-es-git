@@ -1,12 +1,19 @@
-const validator = require('validator');
-const { NEXT } = require('./const');
+const { NEXT, SPECS } = require('./const');
 
-exports.sha1 = async (req, res, next, hash) => {
-  if (!validator.isHash(hash, 'sha1')) {
-    res.status(400);
-    throw new Error(`${hash} has to be sha1`);
-  }
-  else {
+module.exports = (repo, options = {}) => ({
+  ref: async (req, res, next, ref) => {
+    const { specs = SPECS } = options;
+
+    for (const spec of specs) {
+      const git = spec(ref);
+      const hash = await repo.getRef(git.ref);
+      if (hash) {
+        ({ body: { tree: req.params.ref } } = await repo.loadObject(hash));
+        req.git = { ...git, commit: hash };
+        break;
+      }
+    }
+
     return NEXT;
   }
-}
+})
