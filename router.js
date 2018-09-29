@@ -1,13 +1,15 @@
 const PromiseRouter = require('express-promise-router');
+const param = require('./param');
+const controller = require('./controller');
 
 module.exports = (...args) => {
   const router = new PromiseRouter();
-  const param = require('./param')(...args);
-  const controller = require('./controller')(...args);
+  const { ref } = param(...args);
+  const { loadText, loadPath, write } = controller(...args);
 
-  router.param('ref', param.ref);
-  router.get('/:ref\.:ext?', controller.loadText, controller.write);
-  router.get('/:ref/:path([^$]+)', controller.loadPath, controller.write);
+  router.param('ref', ref);
+  router.get('/:ref\.:ext?', loadText, write);
+  router.get('/:ref/:path([^$]+)', loadPath, write);
 
   return router;
 }
