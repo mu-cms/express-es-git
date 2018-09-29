@@ -1,21 +1,4 @@
-const { NEXT, ROUTE, MIME, HEAD, REFS } = require('./const');
-
-const process = (req, res, data, options) => {
-  const { head = HEAD, mime = MIME } = options;
-  const { body } = data;
-
-  if (body) {
-    if (head) {
-      res.set(head(data));
-    }
-    if (mime) {
-      res.type(mime(req.path));
-    }
-    res.send(body);
-  }
-
-  return !!body;
-}
+const { NEXT, ROUTE, HEAD, REFS } = require('./const');
 
 const hasLength = x => x.length > 0;
 
@@ -25,10 +8,11 @@ module.exports = (repo, options = {}) => ({
     const { refs = REFS } = options;
 
     for (const ref of refs) {
-      const hash = await repo.getRef(`${ref.prefix}/${tree}`);
+      const git = ref(tree);
+      const hash = await repo.getRef(git.ref);
       if (hash) {
         ({ body: { tree: req.params.tree } } = await repo.loadObject(hash));
-        req.ref = { commit: hash, ...ref };
+        req.git = { ...git, commit: hash };
         break;
       }
     }
@@ -36,7 +20,7 @@ module.exports = (repo, options = {}) => ({
     return NEXT;
   },
 
-  loadPath: async (req, res) => {
+  loadPath: async (req) => {
     const { path } = req.params;
     let { tree, tree: hash } = req.params;
 
@@ -56,13 +40,31 @@ module.exports = (repo, options = {}) => ({
       hash = entry.hash;
     }
 
-    return process(req, res, { ...req.ref, object: hash, body: await repo.loadText(hash), tree }, options) ? NEXT : ROUTE;
+    req.git = { ...req.git, object: hash, body: await repo.loadText(hash), tree };
+
+    return NEXT;
   },
 
-  loadText: async (req, res) => {
+  loadText: async (req) => {
     const { hash } = req.params;
-    const { mime = MIME } = options;
 
-    return process(req, res, { ...req.ref, object: hash, body: await repo.loadText(hash) }, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
+    req.git = { ...req.git, object: hash, body: await repo.loadText(hash) };
+
+    return NEXT;
+  },
+
+  write: async (req, res) => {
+    const { head = HEAD } = options;
+    const { git, path } = req;
+    const { body } = git;
+
+    if (body) {
+      if (head) {
+        res.set(head({ ...git, path }));
+      }
+      res.send(body);
+    }
+
+    return NEXT;
   }
 });
