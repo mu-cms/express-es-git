@@ -19,6 +19,7 @@
   "dependencies": {
     "express": "^4",
     "express-promise-router": "^3.0.3",
-    "mime-types": "^2.1.20"
+    "mime-types": "^2.1.20",
+    "omit-empty": "^0.4.1"
   }
 }

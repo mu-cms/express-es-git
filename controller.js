@@ -1,3 +1,4 @@
+const compact = require('omit-empty');
 const { NEXT, ROUTE, HEAD } = require('./const');
 
 const hasLength = x => x.length > 0;
@@ -43,7 +44,7 @@ module.exports = (repo, options = {}) => ({
 
     if (body) {
       if (head) {
-        res.set(head({ ...git, path }));
+        res.set(compact(head({ ...git, path })));
       }
       res.send(body);
     }
