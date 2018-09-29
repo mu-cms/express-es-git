@@ -26,8 +26,8 @@ module.exports = (repo, options = {}) => ({
     for (const ref of refs) {
       const hash = await repo.getRef(`${ref}/${tree}`);
       if (hash) {
-        Object.assign(req, { ref, hash });
         ({ body: { tree: req.params.tree } } = await repo.loadObject(hash));
+        Object.assign(req, { ref, hash });
         break;
       }
     }
