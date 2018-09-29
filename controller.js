@@ -4,8 +4,8 @@ const hasLength = x => x.length > 0;
 
 module.exports = (repo, options = {}) => ({
   loadPath: async (req) => {
-    const { path } = req.params;
-    let { ref: tree, ref: hash } = req.params;
+    const { ref: tree, path } = req.params;
+    let { ref: hash } = req.params;
 
     const parts = path.split('/').filter(hasLength);
     for (const part of parts) {
