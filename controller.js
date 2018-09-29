@@ -18,12 +18,25 @@ const process = (req, res, result, cache_control, etag, options) => {
 
 const hasLength = x => x.length > 0;
 
-module.exports = (repo, options = {}) => ({
+module.exports = (repo, options = {
+  refs: [{
+    ref: 'refs/tags',
+    cache: 'max-age=1000, s-maxage=3000'
+  }, {
+    ref: 'refs/heads',
+    cache: 'max-age=100, s-maxage=300, stale-while-revalidate=500, stale-if-error=1000'
+  }]
+}) => ({
   refToTree: async (req) => {
     const { tree } = req.params;
+    const { refs } = options;
 
-    if (req.ref = await repo.getRef(`refs/heads/${tree}`)) {
-      ({ body: { tree: req.params.tree } } = await repo.loadObject(req.ref));
+    for (const ref of refs) {
+      const hash = await repo.getRef(`${ref.ref}/${tree}`);
+      if (hash) {
+        ({ body: { tree: req.params.tree } } = await repo.loadObject(ref.hash = hash));
+        break;
+      }
     }
 
     return NEXT;
