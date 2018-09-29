@@ -1,19 +1,19 @@
 const { NEXT, ROUTE, MIME, CACHE, REFS } = require('./const');
 
-const process = (req, res, result, etag, options) => {
+const process = (req, res, body, etag, options) => {
   const { cache = CACHE, mime = MIME } = options;
 
-  if (result) {
+  if (body) {
     if (cache) {
       res.set(cache(etag, req.ref));
     }
     if (mime) {
       res.type(mime(req.path));
     }
-    res.send(result);
+    res.send(body);
   }
 
-  return !!result;
+  return !!body;
 }
 
 const hasLength = x => x.length > 0;
