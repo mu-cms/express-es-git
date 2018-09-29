@@ -1,11 +1,11 @@
-const { NEXT, ROUTE, MIME, CACHE, CACHE_SHORT, CACHE_LONG } = require('./const');
+const { NEXT, ROUTE, MIME, CACHE, REFS } = require('./const');
 
-const process = (req, res, result, cache_control, etag, options) => {
+const process = (req, res, result, etag, options) => {
   const { cache = CACHE, mime = MIME } = options;
 
   if (result) {
     if (cache) {
-      res.set(cache(cache_control, etag));
+      res.set(cache(etag, req.ref));
     }
     if (mime) {
       res.type(mime(req.path));
@@ -18,23 +18,16 @@ const process = (req, res, result, cache_control, etag, options) => {
 
 const hasLength = x => x.length > 0;
 
-module.exports = (repo, options = {
-  refs: [{
-    ref: 'refs/tags',
-    cache: 'max-age=1000, s-maxage=3000'
-  }, {
-    ref: 'refs/heads',
-    cache: 'max-age=100, s-maxage=300, stale-while-revalidate=500, stale-if-error=1000'
-  }]
-}) => ({
+module.exports = (repo, options = {}) => ({
   refToTree: async (req) => {
     const { tree } = req.params;
-    const { refs } = options;
+    const { refs = REFS } = options;
 
     for (const ref of refs) {
-      const hash = await repo.getRef(`${ref.ref}/${tree}`);
+      const hash = await repo.getRef(`${ref}/${tree}`);
       if (hash) {
-        ({ body: { tree: req.params.tree } } = await repo.loadObject(ref.hash = hash));
+        Object.assign(req, { ref, hash });
+        ({ body: { tree: req.params.tree } } = await repo.loadObject(hash));
         break;
       }
     }
@@ -45,7 +38,6 @@ module.exports = (repo, options = {
   loadPath: async (req, res) => {
     const { path } = req.params;
     let { tree: hash } = req.params;
-    const { cache_long = CACHE_LONG, cache_short = CACHE_SHORT } = options;
 
     const parts = path.split('/').filter(hasLength);
     for (const part of parts) {
@@ -63,13 +55,13 @@ module.exports = (repo, options = {
       hash = entry.hash;
     }
 
-    return process(req, res, await repo.loadText(hash), req.ref ? cache_short : cache_long, hash, options) ? NEXT : ROUTE;
+    return process(req, res, await repo.loadText(hash), hash, options) ? NEXT : ROUTE;
   },
 
   loadText: async (req, res) => {
     const { hash } = req.params;
-    const { cache_long = CACHE_LONG, mime = MIME } = options;
+    const { mime = MIME } = options;
 
-    return process(req, res, await repo.loadText(hash), cache_long, hash, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
+    return process(req, res, await repo.loadText(hash), hash, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
   }
 });
