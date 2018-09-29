@@ -8,7 +8,7 @@ exports.NEXT = 'next';
 exports.ROUTE = 'route';
 exports.REFS = [ 'refs/tags', 'refs/heads' ];
 exports.MIME = (path, type = 'text/plain') => mime.lookup(path) || type;
-exports.CACHE = (etag, ref) => ({
+exports.HEAD = (etag, ref) => ({
   'Cache-Control': cache_control[ref] || 'only-if-cache',
   'ETag': etag
 });
