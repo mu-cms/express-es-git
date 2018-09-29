@@ -1,11 +1,12 @@
 const { NEXT, ROUTE, MIME, HEAD, REFS } = require('./const');
 
-const process = (req, res, body, etag, options) => {
+const process = (req, res, data, options) => {
   const { head = HEAD, mime = MIME } = options;
+  const { body } = data;
 
   if (body) {
     if (head) {
-      res.set(head(etag, req.ref));
+      res.set(head(data));
     }
     if (mime) {
       res.type(mime(req.path));
@@ -24,10 +25,10 @@ module.exports = (repo, options = {}) => ({
     const { refs = REFS } = options;
 
     for (const ref of refs) {
-      const hash = await repo.getRef(`${ref}/${tree}`);
+      const hash = await repo.getRef(`${ref.ref}/${tree}`);
       if (hash) {
         ({ body: { tree: req.params.tree } } = await repo.loadObject(hash));
-        Object.assign(req, { ref, hash });
+        req.ref = { hash, ...ref };
         break;
       }
     }
@@ -55,13 +56,13 @@ module.exports = (repo, options = {}) => ({
       hash = entry.hash;
     }
 
-    return process(req, res, await repo.loadText(hash), hash, options) ? NEXT : ROUTE;
+    return process(req, res, { hash, body: await repo.loadText(hash), ...req.ref }, options) ? NEXT : ROUTE;
   },
 
   loadText: async (req, res) => {
     const { hash } = req.params;
     const { mime = MIME } = options;
 
-    return process(req, res, await repo.loadText(hash), hash, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
+    return process(req, res, { hash, body: await repo.loadText(hash), ...req.ref }, { ...options, mime: mime ? (path, type = 'application/octet-stream') => mime(path, type) : mime }) ? NEXT : ROUTE;
   }
 });
