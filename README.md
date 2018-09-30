@@ -35,3 +35,16 @@ A full example can be found in [`mu-express`](https://github.com/mu-cms/mu-expre
   Load by object sha1 or ref
 - `/:ref/:path([^$]+)`
   Load by tree sha1 or ref and path
+
+### Examples
+
+- `/testing/package.json`
+  Load by tag ref
+- `/master/package.json`
+  Load by head ref
+- `/0e3b9890a6af246cff7db2bd8b68ccfaba5b1c78/package.json`
+  Load by tree hash
+- `/166db7d969ef2db26bbc62127a276475828384a2.json`
+  Load by blob hash (with `.ext` mime type)
+- `/166db7d969ef2db26bbc62127a276475828384a2`
+  Load by blob hash (with `application/octet-stream` mime type)
