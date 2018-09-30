@@ -8,8 +8,19 @@ module.exports = (repo, options = {}) => ({
       const git = spec(ref);
       const hash = await repo.getRef(git.ref);
       if (hash) {
-        ({ body: { tree: req.params.ref } } = await repo.loadObject(hash));
-        req.git = { ...git, commit: hash };
+        const object = await repo.loadObject(hash);
+        if (!object) {
+          throw new Error(`Missing object: ${hash}`);
+        }
+        else switch (object.type) {
+          case 'commit':
+            req.params.ref = object.body.tree;
+            req.git = { ...git, commit: hash };
+            break;
+
+          default:
+            throw new Error(`Wrong object: ${hash}. Expected commit, got ${object.type}`);
+        }
         break;
       }
     }
