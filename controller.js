@@ -1,6 +1,11 @@
 const compact = require('omit-empty');
 const { NEXT, ROUTE, HEAD } = require('./const');
-
+const HEADERS = {
+  'Content-Type': 'text/plain',
+  'Cache-Control': 'no-cache',
+  'Connection': 'keep-alive',
+  'Transfer-Encoding': 'chunked'
+};
 module.exports = (repo, options = {}) => ({
   loadPath: async (req) => {
     const { ref: tree, path } = req.params;
@@ -53,22 +58,51 @@ module.exports = (repo, options = {}) => ({
   fetch: async (req, res) => {
     const { url, refs } = req.body;
 
-    res.set({
-      'Content-Type': 'text/plain',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Transfer-Encoding': 'chunked'
-    }).write(`Fetching ${refs || 'refs'} from ${url}\n`);
+    res.set(HEADERS).write(`Fetching ${refs || 'refs'} from ${url}\n`);
 
     try {
       await repo.fetch(url, refs, { progress: message => res.write(message) });
     }
-    catch (e) {
-      res.write(`${e}\n`);
+    catch (error) {
+      res.write(`${error}\n`);
       res.write(`Params: ${JSON.stringify({ url, refs }, undefined, 2)}\n`);
     }
     finally {
       res.end('Done');
     }
+  },
+
+  refs: async (req, res) => {
+    const { refs } = req.body;
+
+    res.set(HEADERS).write(`Updating ${refs}\n`);
+
+    for (const ref of Array.isArray(refs) ? refs : [refs]) {
+      try {
+        const [local = '', remote = ''] = ref.split(':');
+        if (local.endsWith("*") || remote.endsWith("*")) {
+          res.write(`Not supported: * refs are not supported\n`);
+        }
+        else if (local && !remote) {
+          res.write(`Removed ref ${local}\n`);
+          repo.setRef(local);
+        }
+        else {
+          const hash = await repo.getRef(remote);
+          if (!hash) {
+            res.write(`Missing ref: ${remote}\n`)
+          }
+          else {
+            res.write(`Updated ref ${ref} to ${hash}\n`);
+            await repo.setRef(local, hash);
+          }
+        }
+      }
+      catch (error) {
+        res.write(`${error}\n`);
+      }
+    }
+
+    res.end('Done');
   }
 });
