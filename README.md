@@ -31,10 +31,12 @@ A full example can be found in [`mu-express`](https://github.com/mu-cms/mu-expre
 
 ## Routes
 
-- `/:ref\.:ext?`
+- `GET` `/:ref\.:ext?`
   Load by object sha1 or ref
-- `/:ref/:path([^$]+)`
+- `GET` `/:ref/:path([^$]+)`
   Load by tree sha1 or ref and path
+- `POST` `/fetch`
+  Fetches refspecs from url
 
 ### Examples
 
@@ -48,3 +50,11 @@ A full example can be found in [`mu-express`](https://github.com/mu-cms/mu-expre
   Load by blob hash (with `.ext` mime type)
 - `/166db7d969ef2db26bbc62127a276475828384a2`
   Load by blob hash (with `application/octet-stream` mime type)
+
+```shell
+curl -X POST \
+  http://127.0.0.1:8080/fetch \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'url=https://github.com/mu-cms/mu-express.git' \
+  -d 'refs[]=refs/heads/*/refs/heads/*'
+  ```
