@@ -59,7 +59,7 @@ module.exports = (repo, options = {}) => ({
       'Connection': 'keep-alive'
     }).write(`fetching ${refs} from ${url}\n`);
 
-    await repo.fetch(url, refs, { progress: message => res.write(`${message}\n`) });
+    await repo.fetch(url, refs, { progress: message => res.write(message) });
 
     res.end();
   }
