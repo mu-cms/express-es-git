@@ -1,6 +1,6 @@
 {
   "name": "@mu-cms/express-es-git",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Micro CMS express middleware for git",
   "main": "index.js",
   "scripts": {
