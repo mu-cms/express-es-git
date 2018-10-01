@@ -57,17 +57,9 @@ module.exports = (repo, options = {}) => ({
       'Content-Type': 'text/plain',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive'
-    });
+    }).write(`fetching ${refs} from ${url}\n`);
 
-    res.write(`fetching ${refs} from ${url}\n`);
-    res.flush();
-
-    await repo.fetch(url, refs, {
-      progress: message => {
-        res.write(`${message}\n`);
-        res.flush();
-      }
-    });
+    await repo.fetch(url, refs, { progress: message => res.write(`${message}\n`) });
 
     res.end();
   }
