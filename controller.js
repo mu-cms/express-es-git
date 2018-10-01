@@ -61,6 +61,6 @@ module.exports = (repo, options = {}) => ({
 
     await repo.fetch(url, refs, { progress: message => res.write(message) });
 
-    res.end();
+    res.end('done');
   }
 });
