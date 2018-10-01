@@ -1,14 +1,12 @@
 const compact = require('omit-empty');
 const { NEXT, ROUTE, HEAD } = require('./const');
 
-const hasLength = x => x.length > 0;
-
 module.exports = (repo, options = {}) => ({
   loadPath: async (req) => {
     const { ref: tree, path } = req.params;
     let { ref: hash } = req.params;
 
-    const parts = path.split('/').filter(hasLength);
+    const parts = path.split('/').filter(x => x.length > 0);
     for (const part of parts) {
       const object = await repo.loadObject(hash);
       if (!object) {
@@ -50,5 +48,27 @@ module.exports = (repo, options = {}) => ({
     }
 
     return NEXT;
+  },
+
+  fetch: async (req, res) => {
+    const { url, refs } = req.body;
+
+    res.set({
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+
+    res.write(`fetching ${refs} from ${url}\n`);
+    res.flush();
+
+    await repo.fetch(url, refs, {
+      progress: message => {
+        res.write(`${message}\n`);
+        res.flush();
+      }
+    });
+
+    res.end();
   }
 });
