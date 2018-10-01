@@ -58,10 +58,17 @@ module.exports = (repo, options = {}) => ({
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
       'Transfer-Encoding': 'chunked'
-    }).write(`fetching ${refs} from ${url}\n`);
+    }).write(`Fetching ${refs || 'refs'} from ${url}\n`);
 
-    await repo.fetch(url, refs, { progress: message => res.write(message) });
-
-    res.end('done');
+    try {
+      await repo.fetch(url, refs, { progress: message => res.write(message) });
+    }
+    catch (e) {
+      res.write(`${e}\n`);
+      res.write(`Params: ${JSON.stringify({ url, refs }, undefined, 2)}\n`);
+    }
+    finally {
+      res.end('Done');
+    }
   }
 });
