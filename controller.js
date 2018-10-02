@@ -68,7 +68,7 @@ module.exports = (repo, options = {}) => ({
       res.write(`Params: ${JSON.stringify({ url, refs }, undefined, 2)}\n`);
     }
     finally {
-      res.end('Done');
+      res.end('Done\n');
     }
   },
 
@@ -103,6 +103,6 @@ module.exports = (repo, options = {}) => ({
       }
     }
 
-    res.end('Done');
+    res.end('Done\n');
   }
 });
