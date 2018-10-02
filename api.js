@@ -3,7 +3,7 @@ const { URLSearchParams } = require('url');
 
 const pipe = (source, target) => {
   return new Promise((resolve, reject) => {
-    source.on('finish', resolve);
+    source.on('end', resolve);
     source.on('error', reject);
     if (target) {
       source.pipe(target);
