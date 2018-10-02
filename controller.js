@@ -70,6 +70,8 @@ module.exports = (repo, options = {}) => ({
     finally {
       res.end('Done\n');
     }
+
+    return ROUTE;
   },
 
   refs: async (req, res) => {
@@ -104,5 +106,7 @@ module.exports = (repo, options = {}) => ({
     }
 
     res.end('Done\n');
+
+    return ROUTE;
   }
 });
