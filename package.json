@@ -21,6 +21,7 @@
     "express-promise-router": "^3.0.3",
     "mime-types": "^2.1.20",
     "node-fetch": "^2.2.0",
-    "omit-empty": "^0.4.1"
+    "omit-empty": "^0.4.1",
+    "url-join": "^4.0.0"
   }
 }
