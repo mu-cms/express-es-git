@@ -1,0 +1,34 @@
+{
+  "name": "@mu-cms/express-es-git-examples",
+  "private": true,
+  "description": "Examples for Micro CMS express middleware",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mu-cms/express-es-git.git"
+  },
+  "author": "Mikael Karon <mikael@karon.se>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mu-cms/express-es-git/issues"
+  },
+  "homepage": "https://github.com/mu-cms/express-es-git#readme",
+  "dependencies": {
+    "@es-git/cache-objects-mixin": "^0.9.0",
+    "@es-git/fetch-mixin": "^0.9.0",
+    "@es-git/load-as-mixin": "^0.9.0",
+    "@es-git/memory-repo": "^0.9.0",
+    "@es-git/mix": "^0.9.0",
+    "@es-git/node-fs-repo": "^0.9.0",
+    "@es-git/object-mixin": "^0.9.0",
+    "@es-git/read-combiner-mixin": "^0.9.0",
+    "@es-git/zlib-mixin": "^0.9.0",
+    "express": "^4.16.4",
+    "node-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
+  }
+}

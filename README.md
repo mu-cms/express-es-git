@@ -27,8 +27,6 @@ const repo;
 app.use(git(repo, options));
 ```
 
-A full example can be found in [`mu-express`](https://github.com/mu-cms/mu-express).
-
 ## Routes
 
 - `GET` `/:ref\.:ext?`
